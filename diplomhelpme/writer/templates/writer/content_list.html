@@ -1,0 +1,26 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Список произведений</h1>
+
+    {% if content_list %}
+    <ul class="list-unstyled">
+
+      {% for content in content_list %}
+      <li>
+          <hr>
+        <samp>Название: <a href="" > {{ content.name }}</a></samp>
+          <br>
+          <samp>Автор: <a href="">{{content.author}}</a></samp>
+          <br>
+          <samp>Жанр: <a href="">{{content.ganre}}</a></samp>
+          <p><samp>Описание: </samp>{{content.description}}</p>
+          <hr>
+      </li>
+      {% endfor %}
+
+    </ul>
+    {% else %}
+      <p>There are no books in the library.</p>
+    {% endif %}
+{% endblock %}

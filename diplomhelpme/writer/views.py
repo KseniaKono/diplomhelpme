@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Content, ContentType
 from django.contrib.auth.models import User
+from django.views import generic
 # Create your views here.
 
 
@@ -20,3 +21,8 @@ def index(request):
         'index.html',
         context={'num_Content':num_Content,'num_Users':num_Users},
     )
+
+
+
+class ContentListView(generic.ListView):
+    model = Content

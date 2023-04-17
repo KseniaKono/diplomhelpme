@@ -39,4 +39,4 @@ class ContentType(models.Model):
     description = models.TextField('Описание', max_length=1000, blank=True, null=True)
 
     def __str__(self):
-        return '%s (%s)' % (self.name, str(self.id))
+        return self.name

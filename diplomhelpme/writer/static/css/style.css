@@ -22,3 +22,7 @@ img{
 padding-left: 100px;
 margin-top: -70px;
 }
+
+hr {
+  border-top: 2px double #ccc;
+}
