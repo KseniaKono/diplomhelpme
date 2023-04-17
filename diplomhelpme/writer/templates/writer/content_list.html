@@ -11,7 +11,7 @@
           <hr>
         <samp>Название: <a href="{{ content.get_absolute_url }}" > {{ content.name }}</a></samp>
           <br>
-          <samp>Автор: <a href="">{{content.author}}</a></samp>
+          <samp>Автор: <a href="{% url 'writer-user-detail' pk=content.author.pk %}">{{content.author}}</a></samp>
           <br>
           <samp>Жанр: <a href="">{{content.ganre}}</a></samp>
           <p><samp>Описание: </samp>{{content.description}}</p>

@@ -30,3 +30,6 @@ class ContentListView(generic.ListView):
 
 class ContentDetailView(generic.DetailView):
     model = Content
+    
+class UserDetailView(generic.DetailView):
+    model = User
