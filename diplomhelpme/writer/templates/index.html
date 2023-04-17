@@ -1,0 +1,24 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Главная страница ЛитКвартета</h1>
+<br>
+<br>
+<br>
+<br>
+<div class="row">
+  <div class="col-sm-4">
+  <ul class="list-unstyled">
+    <li><p>Велком <em>ЛитКвартетцы</em></p></li>
+    <li><p>На данный момент у нас скромно имеются:</p></li>
+    <li><strong>Количество восхитительных произведений:</strong> {{ num_Content }}</li>
+    <br>
+    <li><strong>Количество не менее восхитительных пользователей:</strong> {{ num_Users }}</li>
+  </ul>
+  </div>
+    <div class="col-sm-8">
+        {% load static %}
+        <img src="{% static '1.jpg' %}" class="rounded" alt="Cinque Terre" >
+    </div>
+</div>
+{% endblock %}
