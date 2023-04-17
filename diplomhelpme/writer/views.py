@@ -26,3 +26,7 @@ def index(request):
 
 class ContentListView(generic.ListView):
     model = Content
+
+
+class ContentDetailView(generic.DetailView):
+    model = Content
