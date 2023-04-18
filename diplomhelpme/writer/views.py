@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from .models import Content, ContentType
+from .models import Content, ContentType, Comment
 from django.contrib.auth.models import User
 from django.views import generic
+import uuid
 # Create your views here.
 
 
@@ -27,9 +28,23 @@ def index(request):
 class ContentListView(generic.ListView):
     model = Content
 
+class UserListView(generic.ListView):
+    model = User
 
 class ContentDetailView(generic.DetailView):
     model = Content
     
 class UserDetailView(generic.DetailView):
     model = User
+
+
+class ContentCreate(generic.CreateView):
+    model = Content
+    fields = ['author','ganre','name','description','data' ]
+    #template_name = 'library/comment_form.html'
+
+    def form_valid(self, form):
+        #form.instance.commentator = User.objects.filter(login=self.request.user).get()
+        form.instance.id = uuid.uuid4()
+
+        return super(ContentCreate, self).form_valid(form)

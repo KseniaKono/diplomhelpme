@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Список пользователей</h1>
+
+    {% if user_list %}
+    <ul class="list-unstyled">
+
+      {% for user in user_list %}
+      <li>
+          <hr>
+          <p><samp>Ник: </samp><a href="{% url 'writer-user-detail' pk=user.pk %}" > {{ user.username }}</a></p>
+          <p><samp>Емейл: </samp>{{user.email}}</p>
+          <p><samp>Дата регистрации: </samp>{{ user.date_joined }}</p>
+          <p><samp>Был в сети: </samp>{{ user.last_login }}</p>
+          <hr>
+      </li>
+      {% endfor %}
+
+
+    </ul>
+    {% else %}
+      <p>There are no users in the site.</p>
+    {% endif %}
+{% endblock %}

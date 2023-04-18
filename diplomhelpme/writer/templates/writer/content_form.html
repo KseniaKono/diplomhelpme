@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<h2 class="display-4">Создание произведения</h2>
+<br>
+<br>
+<form action="" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" class="btn btn-primary" value="Создать" />
+
+</form>
+{% endblock %}
