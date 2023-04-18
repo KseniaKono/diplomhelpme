@@ -26,3 +26,7 @@ margin-top: -70px;
 hr {
   border-top: 2px double #ccc;
 }
+
+.text-custom {
+  color: #FFA500;
+}
