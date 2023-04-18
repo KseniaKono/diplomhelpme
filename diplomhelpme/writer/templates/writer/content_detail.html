@@ -10,5 +10,16 @@
    <p><strong>Содержание:</strong> {{ content.data }}</p>
 
 
-{% endblock %}
+    <br>
+    <br>
+  <div style="margin-left:20px;margin-top:20px">
+    <h4>Комментарии</h4>
 
+    {% for copy in content.comment_set.all %}
+    <hr>
+    <a href="{% url 'writer-user-detail' pk=content.author.pk %}"><p>{{copy.commentator}}</p></a>
+    <p><strong>Комментарий:</strong> {{copy.text}}</p>
+    <hr>
+    {% endfor %}
+  </div>
+{% endblock %}

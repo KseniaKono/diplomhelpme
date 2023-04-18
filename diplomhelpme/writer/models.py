@@ -34,3 +34,15 @@ class ContentType(models.Model):
         return self.name
 
 
+class Comment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Уникальный id для каждой оценки')
+    commentator = models.ForeignKey(User, verbose_name='Автор', on_delete=models.CASCADE)
+    content_id = models.ForeignKey(Content, on_delete=models.CASCADE, verbose_name='Произведение')
+    text = models.TextField('Текст', max_length=500)
+
+    def __str__(self):
+        return str(self.id)
+
+    def get_absolute_url(self):
+        return reverse('comment-detail')
+
