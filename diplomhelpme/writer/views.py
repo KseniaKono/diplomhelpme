@@ -3,6 +3,7 @@ from .models import Content, ContentType, Comment
 from django.contrib.auth.models import User
 from django.views import generic
 import uuid
+from django.urls import reverse_lazy
 # Create your views here.
 
 
@@ -48,3 +49,11 @@ class ContentCreate(generic.CreateView):
         form.instance.id = uuid.uuid4()
 
         return super(ContentCreate, self).form_valid(form)
+    
+class ContentUpdate(generic.UpdateView):
+    model = Content
+    fields = ['author','ganre','name','description','data' ]
+
+class ContentDelete(generic.DeleteView):
+    model = Content
+    success_url = reverse_lazy('books')

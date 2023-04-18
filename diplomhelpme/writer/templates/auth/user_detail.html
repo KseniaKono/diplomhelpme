@@ -3,4 +3,14 @@
 {% block content %}
   <h1>Имя: {{ user.username }}</h1>
 
+
+<div style="margin-left:20px;margin-top:20px">
+    <h4>Произведения автора</h4>
+
+    {% for copy in user.content_set.all %}
+    <hr>
+    <a href="{% url 'content-detail' pk=copy.id %}"><p>{{copy.name}}</p></a>
+    <hr>
+    {% endfor %}
+  </div>
 {% endblock %}

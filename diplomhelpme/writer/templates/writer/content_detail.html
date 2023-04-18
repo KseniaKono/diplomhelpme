@@ -1,7 +1,10 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Название: {{ content.name }}</h1>
+   <p style="display: inline;"><a href="{% url 'content_update' pk=content.id %}" class="btn btn-primary">Редактировать</a></p>
+    <p style="display: inline;"><a href="{% url 'content_delete' pk=content.id %}" class="btn btn-danger">Удалить</a></p>
+   <h1>{{ content.name }}</h1>
+
     <br>
   <p><strong>Автор:</strong> <a href="{% url 'writer-user-detail' pk=content.author.pk %}">{{ content.author }}</a></p> <!-- author detail link not yet defined -->
  <p><strong>Жанр:</strong> <samp class="text-custom" title="{{ content.ganre.description }}">{{ content.ganre }}</samp></p>
@@ -22,4 +25,6 @@
     <hr>
     {% endfor %}
   </div>
+
+
 {% endblock %}
