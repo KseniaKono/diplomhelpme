@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Content, ContentType, Comment
 from django.contrib.auth.models import User
 from django.views import generic
@@ -32,11 +32,42 @@ class ContentListView(generic.ListView):
 class UserListView(generic.ListView):
     model = User
 
+
+from .forms import CommentForm
 class ContentDetailView(generic.DetailView):
     model = Content
-    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comment_form'] = CommentForm(initial={'content_id': self.object.pk})
+        context['content'] = self.get_object()
+        return context
+
+
+    def post(self, request, *args, **kwargs):
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            content = self.get_object()
+            comment = form.save(commit=False)
+            comment.content = content
+            comment.save()
+            return redirect('content-detail', pk=content.pk)  # перенаправляем на ту же страницу
+        else:
+            context = self.get_context_data(**kwargs)
+            context['comment_form'] = form  # передаем форму в контекст для повторного отображения
+            return render(request, self.template_name, context)
+
+
+
 class UserDetailView(generic.DetailView):
     model = User
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['comment_form'] = CommentForm(self.request.POST)
+        else:
+            context['comment_form'] = CommentForm(initial={'content_id': self.object.pk})
+        return context
 
 
 class ContentCreate(generic.CreateView):
@@ -57,3 +88,19 @@ class ContentUpdate(generic.UpdateView):
 class ContentDelete(generic.DeleteView):
     model = Content
     success_url = reverse_lazy('books')
+
+
+class CommentCreate(generic.CreateView):
+    model = Comment
+    fields = ['commentator','content_id','text']
+    #template_name = 'writer/content_detail.html'
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        #form.instance.commentator = User.objects.filter(login=self.request.user).get()
+        form.instance.id = uuid.uuid4()
+
+        return super(CommentCreate, self).form_valid(form)
+
+
+

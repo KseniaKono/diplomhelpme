@@ -3,6 +3,7 @@
 {% block content %}
    <p style="display: inline;"><a href="{% url 'content_update' pk=content.id %}" class="btn btn-primary">Редактировать</a></p>
     <p style="display: inline;"><a href="{% url 'content_delete' pk=content.id %}" class="btn btn-danger">Удалить</a></p>
+    <hr>
    <h1>{{ content.name }}</h1>
 
     <br>
@@ -11,9 +12,8 @@
   <p><strong>Описание:</strong> {{ content.description }}</p>
     <br>
    <p><strong>Содержание:</strong> {{ content.data }}</p>
-
-{% block comment %}{% endblock %}
     <br>
+      {% include "writer/comment_form.html" with form=form %}
     <br>
   <div style="margin-left:20px;margin-top:20px">
     <h4>Комментарии</h4>
@@ -24,7 +24,7 @@
     <p><strong>Комментарий:</strong> {{copy.text}}</p>
     <hr>
     {% endfor %}
-  </div>
 
+  </div>
 
 {% endblock %}
