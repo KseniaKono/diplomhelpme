@@ -28,6 +28,21 @@
                  <li class="nav-item text-white">
                     <h4>ЛитКвартет</h4>
                 </li>
+                             {% if user.is_authenticated %}
+             <li class="nav-item text-white">Пользователь: <p class="font-italic text-white">{{ user.get_username }}</p></li>
+             <li class="nav-item"><a class="nav-link text-white font-weight-bold" href="{% url 'logout'%}?next={{request.path}}">Выход</a></li>
+           {% else %}
+             <li class="nav-item"><a class="nav-link text-white font-weight-bold" href="{% url 'login'%}?next={{request.path}}">Войти</a></li>
+              <li class="nav-item">
+                  <a href="{% url 'admin:index'%}" class="nav-link text-white font-weight-bold">Вход для администратора</a>
+              </li>
+                    <li class="nav-item">
+                  <a href="{% url 'register'%}" class="nav-link text-white font-weight-bold">Регистрация</a>
+              </li>
+           {% endif %}
+                     <li class="nav-item">
+                      <hr>
+                  </li>
                     <li class="nav-item">
                       <a href="{% url 'index' %}" class="nav-link text-white font-weight-bold">На главную</a>
                   </li>
@@ -38,11 +53,13 @@
                       <a href="{% url 'books' %}" class="nav-link text-white font-weight-bold">Все произведения</a>
                   </li>
                     <li class="nav-item">
+                  {% if user.is_authenticated %}
                       <hr>
                   </li>
                    <li class="nav-item">
                       <a href="{% url 'content_create' %}" class="nav-link text-white font-weight-bold">Добавить произведение</a>
                   </li>
+                   {% endif %}
               </ul>
           </nav>
           {% endblock %}

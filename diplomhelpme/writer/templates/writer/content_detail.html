@@ -1,9 +1,14 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+
+    {% if user.is_authenticated %}
+    {% if object.author == request.user %}
    <p style="display: inline;"><a href="{% url 'content_update' pk=content.id %}" class="btn btn-primary">Редактировать</a></p>
     <p style="display: inline;"><a href="{% url 'content_delete' pk=content.id %}" class="btn btn-danger">Удалить</a></p>
     <hr>
+    {% endif %}
+    {% endif %}
    <h1>{{ content.name }}</h1>
 
     <br>

@@ -13,4 +13,5 @@ urlpatterns = [
     re_path(r'^content/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/update/$', views.ContentUpdate.as_view(), name='content_update'),
     re_path(r'^content/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$', views.ContentDelete.as_view(), name='content_delete'),
     re_path(r'^comment/create/$', views.CommentCreate.as_view(), name='comment_create'),
+    re_path(r'^register/$', views.register_user, name='register'),
 ]
