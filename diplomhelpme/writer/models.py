@@ -4,7 +4,7 @@ import uuid
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
-
+from django.utils import timezone
 
 
 # Create your models here.
@@ -39,6 +39,7 @@ class Comment(models.Model):
     commentator = models.ForeignKey(User, verbose_name='Автор', on_delete=models.CASCADE)
     content_id = models.ForeignKey(Content, on_delete=models.CASCADE, verbose_name='Произведение')
     text = models.TextField('Текст', max_length=500)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return str(self.id)

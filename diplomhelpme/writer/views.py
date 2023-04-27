@@ -1,6 +1,7 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Content, ContentType, Comment
 from django.contrib.auth.models import User
 from django.views import generic
@@ -33,8 +34,23 @@ def index(request):
         'index.html',
         context={'num_Content':num_Content,'num_Users':num_Users},
     )
-
-
+@login_required
+def contentdetail(request, pk):
+    content = get_object_or_404(Content, pk=pk)
+    form = CommentForm()
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        tmp = form.save(commit=False)
+        if form.is_valid():
+            tmp.content_id = content
+            tmp.commentator = request.user
+            tmp.save()
+            return redirect('contentdetail', pk=pk)  # перенаправляем на ту же страницу
+    return render(
+        request,
+        'contentdetail.html',
+        context={'content':content, 'comment_form': form}
+    )
 
 class ContentListView(generic.ListView):
     model = Content
@@ -44,27 +60,6 @@ class UserListView(generic.ListView):
 
 
 
-class ContentDetailView(generic.DetailView):
-    model = Content
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['comment_form'] = CommentForm(initial={'content_id': self.object.pk})
-        context['content'] = self.get_object()
-        return context
-
-
-    def post(self, request, *args, **kwargs):
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            content = self.get_object()
-            comment = form.save(commit=False)
-            comment.content = content
-            comment.save()
-            return redirect('content-detail', pk=content.pk)  # перенаправляем на ту же страницу
-        else:
-            context = self.get_context_data(**kwargs)
-            context['comment_form'] = form  # передаем форму в контекст для повторного отображения
-            return render(request, self.template_name, context)
 
 
 

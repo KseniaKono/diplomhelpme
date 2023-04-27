@@ -9,7 +9,7 @@
 
     {% for copy in user.content_set.all %}
     <hr>
-    <a href="{% url 'content-detail' pk=copy.id %}"><p>{{copy.name}}</p></a>
+    <a href="{% url 'contentdetail' pk=copy.id %}"><p>{{copy.name}}</p></a>
     <hr>
     {% endfor %}
   </div>

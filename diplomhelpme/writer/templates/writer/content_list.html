@@ -9,7 +9,7 @@
       {% for content in content_list %}
       <li>
           <hr>
-        <samp>Название: <a href="{{ content.get_absolute_url }}" > {{ content.name }}</a></samp>
+        <samp>Название: <a href="{% url 'contentdetail' pk=content.pk %}" > {{ content.name }}</a></samp>
           <br>
           <samp>Автор: <a href="{% url 'writer-user-detail' pk=content.author.pk %}">{{content.author}}</a></samp>
           <br>
