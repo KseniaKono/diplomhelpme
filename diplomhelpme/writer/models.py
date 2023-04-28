@@ -21,7 +21,7 @@ class Content(models.Model):
         return '%s (%s)' % (self.name, str(self.id))
 
     def get_absolute_url(self):
-        return reverse('content-detail', args=[str(self.id)])
+        return reverse('contentdetail', args=[str(self.id)])
 
 
 

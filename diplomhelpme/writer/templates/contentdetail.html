@@ -3,7 +3,7 @@
 {% block content %}
 
     {% if user.is_authenticated %}
-    {% if object.author == request.user %}
+    {% if content.author == user %}
    <p style="display: inline;"><a href="{% url 'content_update' pk=content.id %}" class="btn btn-primary">Редактировать</a></p>
     <p style="display: inline;"><a href="{% url 'content_delete' pk=content.id %}" class="btn btn-danger">Удалить</a></p>
     <hr>
@@ -28,7 +28,14 @@
     <a href="{% url 'writer-user-detail' pk=content.author.pk %}"><p>{{copy.commentator}}</p></a>
     <p style="word-wrap: break-word;"><strong>Комментарий:</strong> {{copy.text}}</p>
     <p style="word-wrap: break-word;"><strong>Дата создания:</strong> {{copy.created_at}}</p>
-    <hr>
+
+     {% if user.is_authenticated and copy.commentator == user %}
+    <form method="post" action="{% url 'delete_comment' pk=copy.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-secondary" onclick="return confirm('Вы действительно хотите удалить этот комментарий?')">Удалить комментарий</button>
+    </form>
+      {% endif %}
+      <hr>
     {% endfor %}
 
   </div>

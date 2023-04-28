@@ -34,34 +34,40 @@ def index(request):
         'index.html',
         context={'num_Content':num_Content,'num_Users':num_Users},
     )
+
+
 @login_required
 def contentdetail(request, pk):
     content = get_object_or_404(Content, pk=pk)
-    form = CommentForm()
+    comment_form = CommentForm()
     if request.method == "POST":
-        form = CommentForm(request.POST)
-        tmp = form.save(commit=False)
-        if form.is_valid():
-            tmp.content_id = content
-            tmp.commentator = request.user
-            tmp.save()
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.content_id = content
+            comment.commentator = request.user
+            comment.save()
             return redirect('contentdetail', pk=pk)  # перенаправляем на ту же страницу
     return render(
         request,
         'contentdetail.html',
-        context={'content':content, 'comment_form': form}
+        context={'content':content, 'comment_form': comment_form}
     )
 
+@login_required
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.method == "POST":
+        comment.delete()
+        return redirect('contentdetail',  pk=comment.content_id.id)
 class ContentListView(generic.ListView):
     model = Content
+    paginate_by = 10
+
 
 class UserListView(generic.ListView):
     model = User
-
-
-
-
-
+    paginate_by = 10
 
 class UserDetailView(generic.DetailView):
     model = User
@@ -77,11 +83,11 @@ class UserDetailView(generic.DetailView):
 
 class ContentCreate(LoginRequiredMixin, generic.CreateView):
     model = Content
-    fields = ['author','ganre','name','description','data' ]
+    fields = ['ganre','name','description','data' ]
     #template_name = 'library/comment_form.html'
 
     def form_valid(self, form):
-        #form.instance.commentator = User.objects.filter(login=self.request.user).get()
+        form.instance.author = self.request.user  # устанавливаем автора формы на текущего пользователя
         form.instance.id = uuid.uuid4()
 
         return super(ContentCreate, self).form_valid(form)
@@ -113,17 +119,6 @@ class ContentDelete(LoginRequiredMixin,generic.DeleteView):
 
         return super().dispatch(request, *args, **kwargs)
 
-class CommentCreate(generic.CreateView):
-    model = Comment
-    fields = ['commentator','content_id','text']
-    #template_name = 'writer/content_detail.html'
-    success_url = reverse_lazy('index')
-
-    def form_valid(self, form):
-        #form.instance.commentator = User.objects.filter(login=self.request.user).get()
-        form.instance.id = uuid.uuid4()
-
-        return super(CommentCreate, self).form_valid(form)
 
 
 def register_user(request):
