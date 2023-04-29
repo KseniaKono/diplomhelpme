@@ -1,15 +1,15 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Content, ContentType, Comment
+from .models import Content, ContentType, Comment, Like
 from django.contrib.auth.models import User
 from django.views import generic
 import uuid
 from django.urls import reverse_lazy
 from .forms import CommentForm, SignUpForm
 from django.contrib.auth import authenticate, login
-from django.contrib import messages
 
 
 
@@ -40,6 +40,8 @@ def index(request):
 def contentdetail(request, pk):
     content = get_object_or_404(Content, pk=pk)
     comment_form = CommentForm()
+    liked = Like.objects.filter(user=request.user, content_id=content).exists()  # добавляем проверку на лайк
+    likes_count = content.like_set.aggregate(Count('id'))['id__count']  # подсчитываем количество лайков для текущего произведения
     if request.method == "POST":
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
@@ -51,8 +53,10 @@ def contentdetail(request, pk):
     return render(
         request,
         'contentdetail.html',
-        context={'content':content, 'comment_form': comment_form}
+        context={'content':content, 'comment_form': comment_form, 'liked': liked, 'likes_count': likes_count}
     )
+
+
 
 @login_required
 def delete_comment(request, pk):
@@ -60,10 +64,18 @@ def delete_comment(request, pk):
     if request.method == "POST":
         comment.delete()
         return redirect('contentdetail',  pk=comment.content_id.id)
+
+class ContentLike(LoginRequiredMixin, generic.ListView):
+    def post(self, request, pk):
+        content = get_object_or_404(Content, pk=pk)
+        like, created = Like.objects.get_or_create(user=request.user, content_id=content)
+        if not created:
+            like.delete()
+        return redirect('contentdetail', pk=pk)
+
 class ContentListView(generic.ListView):
     model = Content
     paginate_by = 10
-
 
 class UserListView(generic.ListView):
     model = User
@@ -136,3 +148,8 @@ def register_user(request):
             #essages.success(request, ("eeeeeee"))
             return redirect('index')
     return render(request, "register.html", {'form':form})
+
+
+def top_contents(request):
+    top_contents = Content.objects.annotate(num_likes=Count('like')).order_by('-num_likes')[:10]
+    return render(request, 'top_contents.html', {'top_contents': top_contents})

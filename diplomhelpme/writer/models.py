@@ -35,7 +35,7 @@ class ContentType(models.Model):
 
 
 class Comment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Уникальный id для каждой оценки')
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Уникальный id для каждого комментария')
     commentator = models.ForeignKey(User, verbose_name='Автор', on_delete=models.CASCADE)
     content_id = models.ForeignKey(Content, on_delete=models.CASCADE, verbose_name='Произведение')
     text = models.TextField('Текст', max_length=500)
@@ -46,3 +46,11 @@ class Comment(models.Model):
 
     def get_absolute_url(self):
         return reverse('comment-detail')
+
+
+class Like(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Уникальный id для каждой оценки')
+    user = models.ForeignKey(User, verbose_name='Автор', on_delete=models.CASCADE)
+    content_id = models.ForeignKey(Content, on_delete=models.CASCADE, verbose_name='Произведение')
+    def __str__(self):
+        return str(self.id)

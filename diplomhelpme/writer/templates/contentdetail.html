@@ -9,7 +9,11 @@
     <hr>
     {% endif %}
     {% endif %}
-   <h1>{{ content.name }}</h1>
+
+<div style="display: flex; align-items: center;">
+   <h1 >{{ content.name }} </h1>
+   <p class="badge badge-lg badge-secondary" style="margin-left: 10px;"> &#x2665; {{ likes_count }}</p>
+</div>
 
     <br>
   <p><strong>Автор:</strong> <a href="{% url 'writer-user-detail' pk=content.author.pk %}">{{ content.author }}</a></p> <!-- author detail link not yet defined -->
@@ -18,9 +22,25 @@
     <br>
    <p style="word-wrap: break-word;"><strong>Содержание:</strong> {{ content.data }}</p>
     <br>
+    {% if user.is_authenticated %}
+    {% if content.author != user %}
+    <form action="{% url 'like_content' pk=content.pk %}" method="POST">
+    {% csrf_token %}
+
+        <button type="submit" class="btn {% if liked %}btn-primary{% else %}btn-secondary{% endif %}">
+        {% if liked %}
+            <i class="fas fa-heart"></i> (•ᴗ•)♡︎
+        {% else %}
+            <i class="far fa-heart"></i> (•ᴗ•)︎
+        {% endif %}
+        </button>
+    </form>
+    {% endif %}
+    {% endif %}
+
       {% include "writer/comment_form.html" with form=form %}
-    <br>
   <div style="margin-left:20px;margin-top:20px">
+      <br>
     <h4>Комментарии</h4>
 
     {% for copy in content.comment_set.all %}
@@ -39,6 +59,5 @@
     {% endfor %}
 
   </div>
-
 
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Content, ContentType, Comment
+from .models import Content, ContentType, Comment, Like
 # Register your models here.
 admin.site.register(Content)
 admin.site.register(ContentType)
 admin.site.register(Comment)
+admin.site.register(Like)

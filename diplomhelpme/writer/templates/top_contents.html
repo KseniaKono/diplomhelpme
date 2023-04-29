@@ -1,0 +1,24 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Топ-10 произведений</h1>
+    {% for content in top_contents %}
+          <hr>
+          {% if forloop.counter == 1 %}
+            🥇 <!-- золотая медаль -->
+          {% elif forloop.counter == 2 %}
+            🥈 <!-- серебряная медаль -->
+          {% elif forloop.counter == 3 %}
+            🥉 <!-- бронзовая медаль -->
+          {% else %}
+            <samp><span class="badge badge-success rounded-circle">{{ forloop.counter }}</span></samp>
+          {% endif %}
+        <samp><a href="{% url 'contentdetail' pk=content.pk %}" > {{ content.name }}</a> <p class="badge badge-lg badge-secondary">{{ content.num_likes }} ♡</p></samp>
+          <br>
+          <samp>Автор: <a href="{% url 'writer-user-detail' pk=content.author.pk %}">{{content.author}}</a></samp>
+          <br>
+          <samp>Жанр: <samp class="text-custom" title="{{ content.ganre.description }}">{{ content.ganre }}</samp></samp>
+          <p><samp>Описание: </samp>{{content.description}}</p>
+          <hr>
+    {% endfor %}
+{% endblock %}
