@@ -1,7 +1,11 @@
 from django import forms
-from .models import Comment
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.forms import DateInput
+
+from .models import Comment, Profile
+
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
@@ -34,3 +38,27 @@ class SignUpForm(UserCreationForm):
         self.fields['password2'].widget.attrs['placeholder'] = 'Confirm Password'
         self.fields['password2'].label = ''
         self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Подтвердите пароль введенный выше.</small></span>'
+
+class ProfileForm(forms.ModelForm):
+    date_of_birth = forms.DateField(label='Дата рождения', widget=DateInput(attrs={'type': 'date'}))
+
+
+    class Meta:
+        model = Profile
+        fields = ['name', 'date_of_birth', 'gender', 'location', 'contact_info', 'interests', 'skills', 'about_me']
+        labels = {
+            'name': 'Имя',
+            'gender': 'Пол',
+            'location': 'Местоположение',
+            'contact_info': 'Контактная информация',
+            'interests': 'Интересы',
+            'skills': 'Навыки',
+            'about_me': 'О себе',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+        self.fields['date_of_birth'].widget.attrs['type'] = 'date'
+

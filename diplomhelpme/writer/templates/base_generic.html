@@ -28,9 +28,15 @@
                  <li class="nav-item text-white">
                     <h4>ЛитКвартет</h4>
                 </li>
-                             {% if user.is_authenticated %}
-             <li class="nav-item text-white">Пользователь: <p class="font-italic text-white">{{ user.get_username }}</p></li>
-             <li class="nav-item"><a class="nav-link text-white font-weight-bold" href="{% url 'logout'%}?next={{request.path}}">Выход</a></li>
+              {% if request.user.is_authenticated %}
+             <li class="nav-item text-white">Пользователь: <p class="font-italic text-white">{{ request.user.get_username }}</p></li>
+              </li>
+                <li class="nav-item">
+                  <a href="{% url 'writer-user-detail' pk=request.user.pk %}" class="nav-link text-white font-weight-bold">Мой профиль</a>
+              </li>
+               <li class="nav-item">
+                  <a href="{% url 'content_create' %}" class="nav-link text-white font-weight-bold">Добавить произведение</a>
+              </li>
            {% else %}
              <li class="nav-item"><a class="nav-link text-white font-weight-bold" href="{% url 'login'%}?next={{request.path}}">Войти</a></li>
               <li class="nav-item">
@@ -56,13 +62,10 @@
                       <a href="{% url 'top_contents' %}" class="nav-link text-white font-weight-bold">Топ</a>
                   </li>
                     <li class="nav-item">
-                  {% if user.is_authenticated %}
-                      <hr>
-                  </li>
-                   <li class="nav-item">
-                      <a href="{% url 'content_create' %}" class="nav-link text-white font-weight-bold">Добавить произведение</a>
-                  </li>
-                   {% endif %}
+           {% if request.user.is_authenticated %}
+             <hr>
+            <li class="nav-item"><a class="nav-link text-white font-weight-bold" href="{% url 'logout'%}?next={{request.path}}">Выход</a></li>
+           {% endif %}
               </ul>
           </nav>
           {% endblock %}

@@ -1,16 +1,83 @@
 {% extends "base_generic.html" %}
-
 {% block content %}
-  <h1>Имя: {{ user.username }}</h1>
+  <h1>Профиль автора {{ user.username }}</h1>
 
+<br>
+<br>
+<div class="container ">
+  <div class="row justify-content-center">
+    <div class="col-md-9">
+      <div class="card border-secondary" style="background-color: #514D51;">
+        <div class="card-body">
+          <h4 class="card-title font-weight-bold text-white">Об авторе {{ user.username }}</h4>
+          <div class="form-group row">
+            <label class="col-md-4 text-white font-weight-bold col-form-label">Имя:</label>
+            <div class="col-md-8">
+              <div class="border rounded p-2" style="background-color: white;">{{ user.profile.name }}</div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-4 text-white font-weight-bold col-form-label">Дата рождения:</label>
+            <div class="col-md-8">
+              <div class="border rounded p-2" style="background-color: white;">{{ user.profile.date_of_birth }}</div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-4 text-white font-weight-bold col-form-label">Пол:</label>
+            <div class="col-md-8">
+              <div class="border rounded p-2" style="background-color: white;">{{ user.profile.get_gender_display }}</div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-4 text-white font-weight-bold col-form-label">Местоположение:</label>
+            <div class="col-md-8">
+              <div class="border rounded p-2" style="background-color: white;">{{ user.profile.location }}</div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-4 text-white font-weight-bold col-form-label">Контактная информация:</label>
+            <div class="col-md-8">
+              <div class="border rounded p-2" style="background-color: white;">{{ user.profile.contact_info }}</div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-4 text-white font-weight-bold col-form-label">Интересы:</label>
+            <div class="col-md-8">
+              <div class="border rounded p-2" style="background-color: white;">{{ user.profile.interests }}</div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-4 text-white font-weight-bold col-form-label">Навыки:</label>
+            <div class="col-md-8">
+              <div class="border rounded p-2" style="background-color: white;">{{ user.profile.skills }}</div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-4 text-white font-weight-bold col-form-label">О себе:</label>
+            <div class="col-md-8">
+              <div class="border rounded p-2" style="background-color: white;">{{ user.profile.about_me }}</div>
+            </div>
+          </div>
+           {% if user.is_authenticated and request.user == user %}
+          <p style="display: inline;"><a href="{% url 'profile' pk=request.user.pk %}" class="btn btn-info">Редактировать</a></p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
+<br>
 <div style="margin-left:20px;margin-top:20px">
     <h4>Произведения автора</h4>
 
     {% for copy in user.content_set.all %}
-    <hr>
-    <a href="{% url 'contentdetail' pk=copy.id %}"><p>{{copy.name}}</p></a>
-    <hr>
+          <hr>
+        <samp><a href="{% url 'contentdetail' pk=copy.pk %}" > {{ copy.name }}</a></samp>
+          <br>
+          <samp>Жанр: <samp class="text-custom" title="{{ copy.ganre.description }}">{{ copy.ganre }}</samp></samp>
+          <p><samp>Описание: </samp>{{copy.description}}</p>
+          <hr>
     {% endfor %}
   </div>
 {% endblock %}

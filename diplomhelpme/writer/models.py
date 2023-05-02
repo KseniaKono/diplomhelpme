@@ -54,3 +54,18 @@ class Like(models.Model):
     content_id = models.ForeignKey(Content, on_delete=models.CASCADE, verbose_name='Произведение')
     def __str__(self):
         return str(self.id)
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    date_of_birth = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=10, choices=[('male', 'Male'), ('female', 'Female')])
+    location = models.CharField(max_length=100)
+    contact_info = models.CharField(max_length=200, null=True, blank=True)
+    interests = models.CharField(max_length=200, null=True, blank=True)
+    skills = models.CharField(max_length=200, null=True, blank=True)
+    about_me = models.TextField(null=True, blank=True)
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+
+    def __str__(self):
+        return str(self.id)

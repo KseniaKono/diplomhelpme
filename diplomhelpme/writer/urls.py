@@ -16,4 +16,5 @@ urlpatterns = [
             views.contentdetail, name='contentdetail'),
     re_path(r'^comment/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/delete/$', views.delete_comment, name='delete_comment'),
     re_path(r'^content/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/like/$', views.ContentLike.as_view(), name='like_content'),
+    re_path(r'^profile/(?P<pk>\d+)$', views.profile, name='profile'),
 ]

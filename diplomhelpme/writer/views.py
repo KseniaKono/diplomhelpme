@@ -1,14 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.db.models import Count
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Content, ContentType, Comment, Like
+from .models import Content, ContentType, Comment, Like, Profile
 from django.contrib.auth.models import User
 from django.views import generic
 import uuid
 from django.urls import reverse_lazy
-from .forms import CommentForm, SignUpForm
+from .forms import CommentForm, SignUpForm, ProfileForm
 from django.contrib.auth import authenticate, login
 
 
@@ -84,13 +87,6 @@ class UserListView(generic.ListView):
 class UserDetailView(generic.DetailView):
     model = User
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.POST:
-            context['comment_form'] = CommentForm(self.request.POST)
-        else:
-            context['comment_form'] = CommentForm(initial={'content_id': self.object.pk})
-        return context
 
 
 class ContentCreate(LoginRequiredMixin, generic.CreateView):
@@ -138,14 +134,14 @@ def register_user(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
+            with transaction.atomic():
+                user = form.save()
+                Profile.objects.create(user=user)
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
-            #email = form.cleaned_data['email']
             #log in user
             user = authenticate(username=username, password=password)
             login(request,user)
-            #essages.success(request, ("eeeeeee"))
             return redirect('index')
     return render(request, "register.html", {'form':form})
 
@@ -153,3 +149,18 @@ def register_user(request):
 def top_contents(request):
     top_contents = Content.objects.annotate(num_likes=Count('like')).order_by('-num_likes')[:10]
     return render(request, 'top_contents.html', {'top_contents': top_contents})
+
+@login_required
+def profile(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    profile = user.profile
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('writer-user-detail', pk=pk)
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'profile.html', {'form': form, 'user': user})
+
