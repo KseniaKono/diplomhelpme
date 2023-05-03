@@ -155,7 +155,7 @@ def profile(request, pk):
     user = get_object_or_404(User, pk=pk)
     profile = user.profile
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile)  # Обработка файла
         if form.is_valid():
             form.save()
             return redirect('writer-user-detail', pk=pk)

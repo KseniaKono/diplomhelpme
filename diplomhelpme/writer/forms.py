@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.forms import DateInput
-
+from django.forms import DateInput, ClearableFileInput
+from django.forms import FileInput
 from .models import Comment, Profile
 
 
@@ -42,10 +42,14 @@ class SignUpForm(UserCreationForm):
 class ProfileForm(forms.ModelForm):
     date_of_birth = forms.DateField(label='Дата рождения', widget=DateInput(attrs={'type': 'date'}))
 
-
+    avatar = forms.ImageField(
+        label='Аватар',
+        widget=ClearableFileInput(attrs={'multiple': False}),
+        required=False,
+    )
     class Meta:
         model = Profile
-        fields = ['name', 'date_of_birth', 'gender', 'location', 'contact_info', 'interests', 'skills', 'about_me']
+        fields = ['name', 'date_of_birth', 'gender', 'location', 'contact_info', 'interests', 'skills', 'about_me', 'avatar',]
         labels = {
             'name': 'Имя',
             'gender': 'Пол',
