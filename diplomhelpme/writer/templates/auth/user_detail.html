@@ -88,19 +88,20 @@
 <br>
 <br>
 
+
+
 <div style="display: flex; height: 300px;">
+  {% if content_count %}
   <div style="width: 300px; height: 300px;">
     <canvas id="myChart"></canvas>
   </div>
+{% endif %}
 
   {% if content_count %}
     <div style="flex: 1; height: 100%;">
       <canvas id="myChartt" style="height: 100%;"></canvas>
     </div>
   {% else %}
-    <div style="flex: 1; height: 100%;">
-      <p style="height: 100%;">No content yet</p>
-    </div>
   {% endif %}
 </div>
 
@@ -197,7 +198,7 @@
 
 
 
-
+  {% if content_count %}
 <br>
 <div style="margin-left:20px;margin-top:20px">
     <h4>Произведения автора</h4>
@@ -210,6 +211,7 @@
           <p><samp>Описание: </samp>{{copy.description}}</p>
           <hr>
     {% endfor %}
+  {% endif %}
   </div>
 
 
