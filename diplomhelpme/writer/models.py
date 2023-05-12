@@ -70,3 +70,8 @@ class Profile(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+
+class PageView(models.Model):
+    page_url = models.CharField(max_length=255)
+    views_count = models.IntegerField(default=0)

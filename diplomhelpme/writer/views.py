@@ -8,7 +8,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Content, ContentType, Comment, Like, Profile
+from .models import Content, ContentType, Comment, Like, Profile, PageView
 from django.contrib.auth.models import User
 from django.views import generic
 import uuid
@@ -41,12 +41,26 @@ def index(request):
     )
 
 
+
+
 @login_required
 def contentdetail(request, pk):
     content = get_object_or_404(Content, pk=pk)
     comment_form = CommentForm()
-    liked = Like.objects.filter(user=request.user, content_id=content).exists()  # добавляем проверку на лайк
-    likes_count = content.like_set.aggregate(Count('id'))['id__count']  # подсчитываем количество лайков для текущего произведения
+    liked = Like.objects.filter(user=request.user, content_id=content).exists()
+    likes_count = content.like_set.aggregate(Count('id'))['id__count']
+
+    # Вызов представления my_view для получения количества просмотров текущей страницы
+    page_url = request.path
+    views_count = 1
+    try:
+        page_view = PageView.objects.get(page_url=page_url)
+        page_view.views_count += 1  # увеличиваем счетчик
+        page_view.save()  # сохраняем изменения
+        views_count = page_view.views_count
+    except PageView.DoesNotExist:
+        PageView.objects.create(page_url=page_url)  # создаем новую запись
+
     if request.method == "POST":
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
@@ -54,13 +68,13 @@ def contentdetail(request, pk):
             comment.content_id = content
             comment.commentator = request.user
             comment.save()
-            return redirect('contentdetail', pk=pk)  # перенаправляем на ту же страницу
+            return redirect('contentdetail', pk=pk)
     return render(
         request,
         'contentdetail.html',
-        context={'content':content, 'comment_form': comment_form, 'liked': liked, 'likes_count': likes_count}
+        context={'content': content, 'comment_form': comment_form, 'liked': liked, 'likes_count': likes_count,
+                 'views_count': views_count}
     )
-
 
 
 @login_required
@@ -89,6 +103,26 @@ class UserListView(generic.ListView):
 class UserDetailView(generic.DetailView):
     model = User
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Получаем пользователя
+        user = self.get_object()
+
+        # Считаем количество лайков, которые поставили пользователи определенного пола к произведениям пользователя
+        male_likes = Like.objects.filter(content_id__author=user, user__profile__gender='male').count()
+        female_likes = Like.objects.filter(content_id__author=user, user__profile__gender='female').count()
+
+        # Добавляем данные в контекст
+        context['male_likes'] = male_likes
+        context['female_likes'] = female_likes
+
+        content_count = user.content_set.count()
+
+        # Добавляем данные в контекст
+        context['content_count'] = content_count
+
+        return context
 
 
 class ContentCreate(LoginRequiredMixin, generic.CreateView):
@@ -128,6 +162,7 @@ class ContentDelete(LoginRequiredMixin,generic.DeleteView):
             return redirect('index')
 
         return super().dispatch(request, *args, **kwargs)
+
 
 
 
@@ -190,4 +225,5 @@ def check_text(request):
             return render(request, 'error.html')
 
     return render(request, 'check_text.html')
+
 

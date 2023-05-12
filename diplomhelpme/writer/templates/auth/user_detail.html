@@ -20,6 +20,8 @@
 </div>
 {% endif %}
 
+
+
 <br>
 <div class="container ">
   <div class="row justify-content-center">
@@ -83,6 +85,118 @@
     </div>
   </div>
 </div>
+<br>
+<br>
+
+<div style="display: flex; height: 300px;">
+  <div style="width: 300px; height: 300px;">
+    <canvas id="myChart"></canvas>
+  </div>
+
+  {% if content_count %}
+    <div style="flex: 1; height: 100%;">
+      <canvas id="myChartt" style="height: 100%;"></canvas>
+    </div>
+  {% else %}
+    <div style="flex: 1; height: 100%;">
+      <p style="height: 100%;">No content yet</p>
+    </div>
+  {% endif %}
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('myChart');
+
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Мужской', 'Женский'],
+      datasets: [{
+        label: '# of Likes',
+        data: [{{ male_likes }}, {{ female_likes }}],
+        backgroundColor: [
+          'rgb(54, 162, 235)',
+          'rgb(255, 99, 132)',
+        ],
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: 'Пол лайкнувших людей'
+        }
+      }
+    }
+  });
+
+  {% if content_count %}
+  const ctx2 = document.getElementById('myChartt');
+
+  new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: [
+        {% for content in user.content_set.all %}
+          "{{ content.name }}"{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ],
+      datasets: [{
+        label: '# of Likes',
+        data: [
+          {% for content in user.content_set.all %}
+            {{ content.like_set.count }}{% if not forloop.last %},{% endif %}
+          {% endfor %}
+        ],
+          backgroundColor: [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(255, 205, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(201, 203, 207, 0.2)'
+          ],
+      borderColor: [
+        'rgb(255, 99, 132)',
+        'rgb(255, 159, 64)',
+        'rgb(255, 205, 86)',
+        'rgb(75, 192, 192)',
+        'rgb(54, 162, 235)',
+        'rgb(153, 102, 255)',
+        'rgb(201, 203, 207)'
+          ],
+      borderWidth: 1
+      }]
+    },
+    options: {
+    scales: {
+      y: {
+        ticks: {
+          precision: 0,
+        },
+      },
+    },
+    plugins: {
+      legend: {
+    display: false
+  },
+      title: {
+        display: true,
+        text: 'Оценки по произведениям'
+      }
+    }
+  }
+  });
+{% endif %}
+</script>
+
+
+
 
 <br>
 <div style="margin-left:20px;margin-top:20px">
@@ -97,4 +211,7 @@
           <hr>
     {% endfor %}
   </div>
+
+
+
 {% endblock %}
