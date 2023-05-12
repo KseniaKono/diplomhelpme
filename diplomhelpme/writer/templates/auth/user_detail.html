@@ -10,7 +10,11 @@
   <div class="position-relative">
     <img src="{{ user.profile.avatar.url }}" alt="Avatar" style="object-fit: cover; height: 200px; width: 200px; border: 2px solid black; padding: 0; border-radius: 50%">
     <div class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark" style="font-size: 18px; padding: 10px; ">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      {% if user.profile.status %}
+        {{ user.profile.status }}
+      {% else %}
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      {% endif %}
     </div>
   </div>
 </div>

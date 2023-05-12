@@ -1,3 +1,5 @@
+import time
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
@@ -13,7 +15,7 @@ import uuid
 from django.urls import reverse_lazy
 from .forms import CommentForm, SignUpForm, ProfileForm
 from django.contrib.auth import authenticate, login
-
+import requests
 
 
 from django.contrib.auth.forms import UserCreationForm
@@ -163,4 +165,29 @@ def profile(request, pk):
         form = ProfileForm(instance=profile)
 
     return render(request, 'profile.html', {'form': form, 'user': user})
+
+
+def check_text(request):
+    if request.method == 'POST':
+        api_key = 'd69477e9e12f2b481ce8ae3e3ceb3a94'
+        text = request.POST['text']
+
+        payload = {
+            'text': text,
+            'userkey': api_key,
+            'format': 'plain',
+            'jsonvisible': 'uniq',
+            'visible': 'vis_on',
+        }
+
+        response = requests.post('http://api.text.ru/post', data=payload)
+
+        if response.status_code == 200:
+            result = response.json()
+            text_uid = result['text_uid']
+            return redirect(f'https://text.ru/antiplagiat/{text_uid}')
+        else:
+            return render(request, 'error.html')
+
+    return render(request, 'check_text.html')
 

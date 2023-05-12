@@ -49,7 +49,7 @@ class ProfileForm(forms.ModelForm):
     )
     class Meta:
         model = Profile
-        fields = ['name', 'date_of_birth', 'gender', 'location', 'contact_info', 'interests', 'skills', 'about_me', 'avatar',]
+        fields = ['name', 'date_of_birth', 'gender', 'location', 'contact_info', 'interests', 'skills', 'about_me', 'avatar', 'status']
         labels = {
             'name': 'Имя',
             'gender': 'Пол',
@@ -58,6 +58,7 @@ class ProfileForm(forms.ModelForm):
             'interests': 'Интересы',
             'skills': 'Навыки',
             'about_me': 'О себе',
+            'status': 'Статус',
         }
 
     def __init__(self, *args, **kwargs):

@@ -1,0 +1,11 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Результат проверки</h1>
+    {% if text_uid %}
+        <p>Текст уникальный: {{ text_uid }}</p>
+        <p>Уникальность текста: {{ uniqueness }}%</p>
+    {% else %}
+        <p>Ошибка при проверке текста.</p>
+    {% endif %}
+{% endblock %}
