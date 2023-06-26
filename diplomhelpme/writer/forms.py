@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms import DateInput, ClearableFileInput
 from django.forms import FileInput
-from .models import Comment, Profile
+from .models import Comment, Profile, Content, SimilarityVote
 
 
 class CommentForm(forms.ModelForm):
@@ -67,3 +67,11 @@ class ProfileForm(forms.ModelForm):
             field.widget.attrs['class'] = 'form-control'
         self.fields['date_of_birth'].widget.attrs['type'] = 'date'
 
+
+class SimilarContentForm(forms.Form):
+    similar_content = forms.ModelChoiceField(queryset=Content.objects.all(), label='Похожее произведение')
+
+class SimilarityVoteForm(forms.ModelForm):
+    class Meta:
+        model = SimilarityVote
+        fields = ['vote']

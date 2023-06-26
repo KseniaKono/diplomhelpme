@@ -16,6 +16,7 @@ class Content(models.Model):
     name = models.CharField('Название', max_length=200)
     description = models.TextField('Аннотация', max_length=500, null=True)
     data = models.TextField('Текст')
+    similar_content = models.ManyToManyField('self', blank=True, verbose_name='Похожие произведения')
 
     def __str__(self):
         return '%s (%s)' % (self.name, str(self.id))
@@ -23,6 +24,22 @@ class Content(models.Model):
     def get_absolute_url(self):
         return reverse('contentdetail', args=[str(self.id)])
 
+
+class SimilarityVote(models.Model):
+    VOTE_CHOICES = (
+        ('+', 'Похоже'),
+        ('-', 'Не похоже'),
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    source_content = models.ForeignKey(Content, on_delete=models.CASCADE, related_name='source_votes', null=True)
+    target_content = models.ForeignKey(Content, on_delete=models.CASCADE, related_name='target_votes', null=True)
+    vote = models.CharField(max_length=1, choices=VOTE_CHOICES)
+
+    class Meta:
+        unique_together = ('user', 'source_content', 'target_content')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.vote} - {self.source_content.name} - {self.target_content.name}"
 
 
 class ContentType(models.Model):

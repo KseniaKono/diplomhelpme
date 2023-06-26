@@ -8,12 +8,12 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Content, ContentType, Comment, Like, Profile, PageView
+from .models import Content, ContentType, Comment, Like, Profile, PageView, SimilarityVote
 from django.contrib.auth.models import User
 from django.views import generic
 import uuid
 from django.urls import reverse_lazy
-from .forms import CommentForm, SignUpForm, ProfileForm
+from .forms import CommentForm, SignUpForm, ProfileForm, SimilarContentForm, SimilarityVoteForm
 from django.contrib.auth import authenticate, login
 import requests
 
@@ -42,11 +42,37 @@ def index(request):
 
 
 
-
 @login_required
 def contentdetail(request, pk):
     content = get_object_or_404(Content, pk=pk)
     comment_form = CommentForm()
+    similar_form = SimilarContentForm()
+    vote_form = SimilarityVoteForm()
+
+    if request.method == "POST":
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.content_id = content
+            comment.commentator = request.user
+            comment.save()
+            return redirect('contentdetail', pk=pk)
+
+        similar_form = SimilarContentForm(request.POST)
+        if similar_form.is_valid():
+            similar_content = similar_form.cleaned_data['similar_content']
+            content.similar_content.add(similar_content)
+            content.save()
+            return redirect('contentdetail', pk=pk)
+
+        vote_form = SimilarityVoteForm(request.POST)
+        if vote_form.is_valid():
+            vote = vote_form.save(commit=False)
+            vote.user = request.user
+            vote.content = content
+            vote.save()
+            return redirect('contentdetail', pk=pk)
+
     liked = Like.objects.filter(user=request.user, content_id=content).exists()
     likes_count = content.like_set.aggregate(Count('id'))['id__count']
 
@@ -61,20 +87,15 @@ def contentdetail(request, pk):
     except PageView.DoesNotExist:
         PageView.objects.create(page_url=page_url)  # создаем новую запись
 
-    if request.method == "POST":
-        comment_form = CommentForm(request.POST)
-        if comment_form.is_valid():
-            comment = comment_form.save(commit=False)
-            comment.content_id = content
-            comment.commentator = request.user
-            comment.save()
-            return redirect('contentdetail', pk=pk)
     return render(
         request,
         'contentdetail.html',
         context={'content': content, 'comment_form': comment_form, 'liked': liked, 'likes_count': likes_count,
-                 'views_count': views_count}
+                 'views_count': views_count, 'similar_form': similar_form, 'vote_form': vote_form}
     )
+
+
+
 
 
 @login_required
@@ -95,6 +116,8 @@ class ContentLike(LoginRequiredMixin, generic.ListView):
 class ContentListView(generic.ListView):
     model = Content
     paginate_by = 10
+
+
 
 class UserListView(generic.ListView):
     model = User
